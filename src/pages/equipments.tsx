@@ -5,16 +5,36 @@ import useSelectEquipment, {
 } from '../atoms/equipment';
 import { useEffect } from 'react';
 import axios from '../api/axiosService';
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import Table, { ColumnsType } from 'antd/es/table';
+import { IEquipment } from '../types/equipment';
+import { Tag } from 'antd';
+
+const columns: ColumnsType<IEquipment> = [
+  {
+    title: 'ID',
+    dataIndex: 'id',
+    key: 'id',
+    render: (text) => <p>{text}</p>,
+  },
+
+  {
+    title: 'Status',
+    key: 'status',
+    dataIndex: 'status',
+    render: (_, { status }) => (
+      <Tag color={status === 'INACTIVE' ? 'volcano' : 'green'} key={status}>
+        {status}
+      </Tag>
+    ),
+  },
+  {
+    title: 'Patient',
+    key: 'patient',
+    dataIndex: 'patient',
+    render: (_, { patient }) => <p>{patient.name}</p>,
+  },
+];
 
 export const Equipments = () => {
   const [, addEquipments] = useAtom(addAllEquipments);
@@ -37,35 +57,17 @@ export const Equipments = () => {
   }, []);
 
   return (
-    <div>
-      Equipments
-      <TableContainer>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>ID</Th>
-              <Th>Status</Th>
-              <Th>Patient</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {equipments.map((equipment) => (
-              <Tr
-                key={equipment.id}
-                onClick={() => {
-                  setSelectEquipment(equipment);
-                  navigate(`/equipments/${equipment.id}`);
-                }}
-                className=":hover cursor-pointer"
-              >
-                <Td>{equipment.id}</Td>
-                <Td>{equipment.status}</Td>
-                <Td>{equipment.patient.name}</Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </div>
+    <Table
+      columns={columns}
+      dataSource={equipments}
+      onRow={(record, rowIndex) => {
+        return {
+          onClick: (event) => {
+            setSelectEquipment(record);
+            navigate(`/equipments/${record.id}`);
+          }, // click row
+        };
+      }}
+    />
   );
 };
