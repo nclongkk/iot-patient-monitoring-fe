@@ -56,9 +56,14 @@ export const Equipments = () => {
     fetchEquipments();
   }, []);
 
+  const rowClassName = (record, index) => {
+    return ':hover cursor-pointer'; // Add a class to the rows
+  };
+
   return (
     <Table
       columns={columns}
+      rowClassName={rowClassName}
       dataSource={equipments}
       onRow={(record, rowIndex) => {
         return {

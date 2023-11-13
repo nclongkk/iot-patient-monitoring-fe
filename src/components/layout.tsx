@@ -38,25 +38,16 @@ const Layout: React.FC = () => {
     <AntLayout className="h-screen">
       <Header style={{ padding: 0, background: colorBgContainer }} />
       <AntLayout hasSider>
-        <Sider
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={(broken) => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-          }}
-        >
+        <Sider breakpoint="lg" collapsedWidth="0">
           <div className="demo-logo-vertical" />
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['dashboard']}
             items={menuItems}
           />
         </Sider>
-        <Content style={{ margin: '24px 16px 0' }}>
+        <Content style={{ margin: '24px 16px 0', overflow: 'auto' }}>
           <div
             style={{
               padding: 24,
@@ -69,7 +60,7 @@ const Layout: React.FC = () => {
         </Content>
       </AntLayout>
 
-      <Footer style={{ textAlign: 'center' }}>Footer</Footer>
+      {/* <Footer style={{ textAlign: 'center' }}>Footer</Footer> */}
     </AntLayout>
   );
 };
