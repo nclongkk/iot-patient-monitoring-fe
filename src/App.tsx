@@ -25,11 +25,14 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="/equipments" element={<Equipments />} />
-        <Route path="/equipments/:id" element={<Equipment />} />
-        <Route path="/patients" element={<Patients />} />
-
+        <Route key="dashboard" index element={<Home />} />
+        <Route key="equipments" path="/equipments" element={<Equipments />} />
+        <Route
+          key="equipments-id"
+          path="/equipments/:id"
+          element={<Equipment />}
+        />
+        <Route key="patients" path="/patients" element={<Patients />} />
         {/* Using path="*"" means "match anything", so this route
                 acts like a catch-all for URLs that we don't have explicit
                 routes for. */}

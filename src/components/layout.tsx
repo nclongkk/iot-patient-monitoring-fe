@@ -1,8 +1,9 @@
 import React from 'react';
-import { Layout as AntLayout, Menu, MenuProps, theme } from 'antd';
+import { Layout as AntLayout, Menu, MenuProps, Typography, theme } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-const { Header, Content, Footer, Sider } = AntLayout;
+const { Header, Content, Sider } = AntLayout;
+const { Title } = Typography;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -35,9 +36,14 @@ const Layout: React.FC = () => {
   ];
 
   return (
-    <AntLayout className="h-screen">
-      <Header style={{ padding: 0, background: colorBgContainer }} />
-      <AntLayout hasSider>
+    <AntLayout style={{ height: '100vh' }}>
+      <Header
+        style={{ padding: 0, background: colorBgContainer }}
+        title="My App"
+      >
+        <Title style={{ margin: '10px 0' }}>My App</Title>
+      </Header>
+      <AntLayout hasSider style={{ height: '100%' }}>
         <Sider breakpoint="lg" collapsedWidth="0">
           <div className="demo-logo-vertical" />
           <Menu
@@ -47,12 +53,13 @@ const Layout: React.FC = () => {
             items={menuItems}
           />
         </Sider>
-        <Content style={{ margin: '24px 16px 0', overflow: 'auto' }}>
+        <Content style={{ margin: '24px 16px' }}>
           <div
             style={{
               padding: 24,
-              minHeight: 360,
+              minHeight: '100%',
               background: colorBgContainer,
+              overflow: 'auto',
             }}
           >
             <Outlet />

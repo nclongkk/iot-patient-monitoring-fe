@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import useSelectEquipment, {
   addAllEquipments,
-  equipments as equipmentState,
+  equipmentsState,
 } from '../atoms/equipment';
 import { useEffect } from 'react';
 import axios from '../api/axiosService';
@@ -15,15 +15,15 @@ const columns: ColumnsType<IEquipment> = [
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
-    render: (text) => <p>{text}</p>,
+    render: (id, record, index) => <p key={index}>{id}</p>,
   },
 
   {
     title: 'Status',
     key: 'status',
     dataIndex: 'status',
-    render: (_, { status }) => (
-      <Tag color={status === 'INACTIVE' ? 'volcano' : 'green'} key={status}>
+    render: (status, record, index) => (
+      <Tag key={index} color={status === 'INACTIVE' ? 'volcano' : 'green'}>
         {status}
       </Tag>
     ),
@@ -32,13 +32,13 @@ const columns: ColumnsType<IEquipment> = [
     title: 'Patient',
     key: 'patient',
     dataIndex: 'patient',
-    render: (_, { patient }) => <p>{patient.name}</p>,
+    render: (index, { patient }) => <p key={index}>{patient.name}</p>,
   },
 ];
 
 export const Equipments = () => {
   const [, addEquipments] = useAtom(addAllEquipments);
-  const [equipments] = useAtom(equipmentState);
+  const [equipments] = useAtom(equipmentsState);
   const [, setSelectEquipment] = useSelectEquipment();
   const navigate = useNavigate();
 
@@ -62,6 +62,7 @@ export const Equipments = () => {
 
   return (
     <Table
+      size="small"
       columns={columns}
       rowClassName={rowClassName}
       dataSource={equipments}

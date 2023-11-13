@@ -3,11 +3,11 @@ import { atom, useAtom } from 'jotai';
 
 type SelectEquipment = IEquipment | undefined;
 
-export const equipments = atom<IEquipment[]>([]);
+export const equipmentsState = atom<IEquipment[]>([]);
 export const addAllEquipments = atom(
   null,
   (_, set, fetchedEquipments: IEquipment[]) => {
-    set(equipments, fetchedEquipments);
+    set(equipmentsState, fetchedEquipments);
   }
 );
 export const selectEquipment = atom<SelectEquipment>(undefined);
