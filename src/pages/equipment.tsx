@@ -26,7 +26,7 @@ export const Equipment = () => {
 
     // Handle connect event
     socket.on('connect', () => {
-      console.log('Connected to the server');
+      console.log(' Connected to the server');
     });
 
     socket.on('equipment-status', (data) => {
@@ -34,14 +34,18 @@ export const Equipment = () => {
         setStatusEquipment('ACTIVE');
 
         socket.on(`sensor-data/${selectedEquipment.id}`, (data) => {
-          const time = dayjs(data.timestamp).format('HH:mm:ss');
-
+          const time = dayjs(data.timestamp).format('HH:m:ss');
+          heartbeatData.slice(heartbeatData.length - 5);
           setHeartbeatData((previousState) => [
-            ...previousState,
+            ...(previousState.length > 10
+              ? previousState.slice(previousState.length - 10)
+              : previousState),
             { heartbeat: data.heartbeat, time },
           ]);
           setSPO2Data((previousState) => [
-            ...previousState,
+            ...(previousState.length > 10
+              ? previousState.slice(previousState.length - 10)
+              : previousState),
             { spo2: data.spo2, time },
           ]);
         });
@@ -50,19 +54,21 @@ export const Equipment = () => {
         data?.status !== 'ACTIVE'
       ) {
         setStatusEquipment('INACTIVE');
-        setHeartbeatData([]);
-        setSPO2Data([]);
+        // setHeartbeatData([]);
+        // setSPO2Data([]);
       }
     });
 
     // Handle disconnect event
     socket.on('disconnect', () => {
-      console.log('Disconnected from the server');
+      console.log(' Disconnected from the server');
     });
 
     // Cleanup on component unmount
     return () => {
       socket.disconnect();
+      console.log(' Cleanup');
+
       setHeartbeatData([]);
       setSPO2Data([]);
     };

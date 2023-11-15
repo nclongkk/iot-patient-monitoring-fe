@@ -1,3 +1,21 @@
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */
+
+body {
+  margin: 0;
+}
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.cursorPointer {
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.fullWidth {
+  width: 100%;
+}

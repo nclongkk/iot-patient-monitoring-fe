@@ -1,7 +1,7 @@
 import { IEquipment } from '../types/equipment';
 import { atom, useAtom } from 'jotai';
 
-type SelectEquipment = IEquipment | undefined;
+export type SelectEquipment = IEquipment | undefined;
 
 export const equipmentsState = atom<IEquipment[]>([]);
 export const addAllEquipments = atom(

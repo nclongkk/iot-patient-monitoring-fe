@@ -4,7 +4,7 @@ import useSelectEquipment, {
   equipmentsState,
 } from '../atoms/equipment';
 import { useEffect } from 'react';
-import axios from '../api/axiosService';
+import axios, { setAuthToken } from '../api/axiosService';
 import { useNavigate } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
 import { IEquipment } from '../types/equipment';
@@ -43,6 +43,7 @@ export const Equipments = () => {
   const navigate = useNavigate();
 
   const fetchEquipments = async () => {
+    setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
       'http://14.225.207.82:3000/api/equipments'
     );
@@ -57,7 +58,7 @@ export const Equipments = () => {
   }, []);
 
   const rowClassName = (record, index) => {
-    return ':hover cursor-pointer'; // Add a class to the rows
+    return 'cursorPointer'; // Add a class to the rows
   };
 
   return (

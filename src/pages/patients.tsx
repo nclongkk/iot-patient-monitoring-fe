@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
-import axios from '../api/axiosService';
+import axios, { setAuthToken } from '../api/axiosService';
 import { useNavigate } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
 import { Button, Flex, Tag } from 'antd';
@@ -59,6 +59,7 @@ export const Patients = () => {
 
   const fetchPatients = useCallback(
     async (page: number) => {
+      setAuthToken(localStorage.getItem('token'));
       const response = await axios.get(
         `http://14.225.207.82:3000/api/patients?page=${page}&limit=10`
       );
@@ -80,7 +81,7 @@ export const Patients = () => {
   }, [paginationInfo.current]);
 
   const rowClassName = (record, index) => {
-    return ':hover cursor-pointer'; // Add a class to the rows
+    return 'cursorPointer'; // Add a class to the rows
   };
 
   return (
@@ -102,14 +103,14 @@ export const Patients = () => {
             setPaginationInfo({ ...paginationInfo, current: page });
           },
         }}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: (event) => {
-              setSelectPatient(record);
-              navigate(`/equipments/${record.id}`);
-            }, // click row
-          };
-        }}
+        // onRow={(record, rowIndex) => {
+        //   return {
+        //     onClick: (event) => {
+        //       setSelectPatient(record);
+        //       navigate(`/patients/${record.id}`);
+        //     }, // click row
+        //   };
+        // }}
       />
       <PatientFormModal />
     </Flex>
