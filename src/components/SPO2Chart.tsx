@@ -11,7 +11,12 @@ const SPO2Chart: React.FC<SPO2ChartProps> = () => {
     <LineChart width={1200} height={300} data={spo2Data}>
       <XAxis dataKey="time" />
       <YAxis />
-      <Line dataKey="spo2" stroke="#82ca9d" dot={false} />
+      <Line
+        dataKey="spo2"
+        stroke="#82ca9d"
+        isAnimationActive={false}
+        dot={false}
+      />
     </LineChart>
   );
 };

@@ -12,7 +12,13 @@ const HeartbeatChart: React.FC<HeartbeatChartProps> = memo(() => {
     <LineChart width={1200} height={300} data={heartbeatData}>
       <XAxis dataKey="time" />
       <YAxis />
-      <Line dataKey="heartbeat" stroke="#8884d8" dot={false} />
+      <Line
+        dataKey="heartbeat"
+        isAnimationActive={false}
+        stroke="#8884d8"
+        dot={false}
+        type={'monotone'}
+      />
     </LineChart>
   );
 });

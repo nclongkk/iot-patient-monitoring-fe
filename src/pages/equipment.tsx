@@ -22,7 +22,7 @@ export const Equipment = () => {
   const [statusEquipment, setStatusEquipment] = useAtom(statusEquipmentState);
   useEffect(() => {
     if (!selectedEquipment?.id) return;
-    const socket = io('http://14.225.207.82:3000');
+    const socket = io('http://14.225.207.82:3000/api/socket');
 
     // Handle connect event
     socket.on('connect', () => {
@@ -33,18 +33,19 @@ export const Equipment = () => {
       if (data?.id === selectedEquipment.id && data?.status === 'ACTIVE') {
         setStatusEquipment('ACTIVE');
 
+        const MAX_DATA = 100;
         socket.on(`sensor-data/${selectedEquipment.id}`, (data) => {
           const time = dayjs(data.timestamp).format('HH:m:ss');
           heartbeatData.slice(heartbeatData.length - 5);
           setHeartbeatData((previousState) => [
-            ...(previousState.length > 10
-              ? previousState.slice(previousState.length - 10)
+            ...(previousState.length > MAX_DATA
+              ? previousState.slice(previousState.length - MAX_DATA)
               : previousState),
             { heartbeat: data.heartbeat, time },
           ]);
           setSPO2Data((previousState) => [
-            ...(previousState.length > 10
-              ? previousState.slice(previousState.length - 10)
+            ...(previousState.length > MAX_DATA
+              ? previousState.slice(previousState.length - MAX_DATA)
               : previousState),
             { spo2: data.spo2, time },
           ]);
