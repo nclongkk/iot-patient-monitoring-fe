@@ -61,7 +61,7 @@ export const Patients = () => {
     async (page: number) => {
       setAuthToken(localStorage.getItem('token'));
       const response = await axios.get(
-        `http://14.225.207.82:3000/api/patients?page=${page}&limit=10`
+        `https://patient-monitoring.site/api/patients?page=${page}&limit=10`,
       );
 
       const data = await response.data.data;
@@ -73,7 +73,7 @@ export const Patients = () => {
         pageSize: data.paging.limit,
       });
     },
-    [addPatients, setPaginationInfo]
+    [addPatients, setPaginationInfo],
   );
 
   useEffect(() => {

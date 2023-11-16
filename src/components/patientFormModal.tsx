@@ -17,8 +17,8 @@ export const PatientFormModal = () => {
   const handleAddPatient = async (data: FormData) => {
     try {
       const response = await axios.post(
-        'http://14.225.207.82:3000/api/patients',
-        data
+        'https://patient-monitoring.site/api/patients',
+        data,
       );
 
       // Handle the response as needed

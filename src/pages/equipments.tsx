@@ -45,7 +45,7 @@ export const Equipments = () => {
   const fetchEquipments = async () => {
     setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
-      'http://14.225.207.82:3000/api/equipments'
+      'https://patient-monitoring.site/api/equipments',
     );
 
     const data = await response.data.data;

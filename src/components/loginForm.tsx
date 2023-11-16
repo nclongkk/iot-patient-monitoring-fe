@@ -12,7 +12,7 @@ const LoginForm: React.FC = () => {
     // Add your authentication logic here
     try {
       const response = await axios.post(
-        'http://14.225.207.82:3000/api/auth/login',
+        'https://patient-monitoring.site/api/auth/login',
         {
           email,
           password,
