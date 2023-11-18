@@ -14,8 +14,6 @@ import {
   Dropdown,
   Menu,
   MenuProps,
-  Popover,
-  Space,
   Typography,
   theme,
 } from 'antd';
@@ -46,7 +44,7 @@ const Layout: React.FC = () => {
           }}
         >
           <LogoutOutlined />
-          Logout
+          Đăng xuất
         </Button>
       ),
     },
@@ -55,7 +53,7 @@ const Layout: React.FC = () => {
   const menuItems: MenuProps['items'] = [
     {
       key: 'dashboard',
-      label: 'Dashboard',
+      label: 'Tổng quan',
       onClick: () => {
         navigate(`/`);
       },
@@ -63,7 +61,7 @@ const Layout: React.FC = () => {
     },
     {
       key: 'equipments',
-      label: 'Equipments',
+      label: 'Thiết bị',
       onClick: () => {
         navigate(`/equipments`);
       },
@@ -71,7 +69,7 @@ const Layout: React.FC = () => {
     },
     {
       key: 'patients',
-      label: 'Patients',
+      label: 'Bệnh nhân',
       onClick: () => {
         navigate(`/patients`);
       },
@@ -96,9 +94,9 @@ const Layout: React.FC = () => {
           background: colorBgContainer,
           justifyContent: 'space-between',
         }}
-        title="Patient monitoring"
+        title="Hệ thống giám sát bệnh nhân"
       >
-        <Title style={{ marginBottom: 0 }}>Patient monitoring</Title>
+        <Title style={{ marginBottom: 0 }}>Hệ thống giám sát bệnh nhân</Title>
         <div
           style={{
             display: 'flex',
@@ -135,7 +133,7 @@ const Layout: React.FC = () => {
             style={{
               padding: 24,
               minHeight: '100%',
-              background: colorBgContainer,
+              background: pathname === '/' ? 'transparent' : colorBgContainer,
               overflow: 'auto',
             }}
           >

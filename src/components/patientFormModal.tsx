@@ -25,14 +25,14 @@ export const PatientFormModal = () => {
       console.log('API Response:', data, response.data);
 
       // Display success message
-      message.success('User added successfully');
+      message.success('Thêm bệnh nhân thành công!');
 
       // Close the modal
       setIsOpenModal(false);
     } catch (error) {
       console.error('API Error:', error);
       // Display error message
-      message.error('Failed to add user');
+      message.error('Thêm bệnh nhân thất bại!');
     }
   };
 

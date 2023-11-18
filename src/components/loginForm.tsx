@@ -16,19 +16,19 @@ const LoginForm: React.FC = () => {
         {
           email,
           password,
-        }
+        },
       );
       console.log({ response });
       if (response.data.status === 'success') {
         // Handle successful login, e.g., store token in local storage, etc.
-        message.success('Login successfully');
+        message.success('Đăng nhập thành công!');
         navigate('/');
         localStorage.setItem('token', response.data.data.accessToken);
         setAuthToken(response.data.data.accessToken);
       }
     } catch (error) {
       console.log({ error });
-      message.error('Login Failed!');
+      message.error('Đăng nhập thất bại!');
     }
   };
 
@@ -37,10 +37,10 @@ const LoginForm: React.FC = () => {
       name="loginForm"
       initialValues={{ remember: true }}
       onFinish={onFinish}
-      style={{ maxWidth: '300px', margin: 'auto', marginTop: '150px' }}
+      style={{ maxWidth: '400px', margin: 'auto', marginTop: '150px' }}
     >
       <Flex justify={'center'}>
-        <Title>Login</Title>
+        <Title>Đăng nhập hệ thống</Title>
       </Flex>
       <Form.Item
         name="email"
@@ -68,13 +68,13 @@ const LoginForm: React.FC = () => {
         <Input
           prefix={<LockOutlined className="site-form-item-icon" />}
           type="password"
-          placeholder="Password"
+          placeholder="Mật khẩu"
         />
       </Form.Item>
 
       <Form.Item>
         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-          Log in
+          Đăng nhập
         </Button>
       </Form.Item>
     </Form>

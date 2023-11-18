@@ -12,24 +12,24 @@ import { Tag } from 'antd';
 
 const columns: ColumnsType<IEquipment> = [
   {
-    title: 'ID',
+    title: 'Mã thiết bị',
     dataIndex: 'id',
     key: 'id',
     render: (id, record, index) => <p key={index}>{id}</p>,
   },
 
   {
-    title: 'Status',
+    title: 'Trạng thái',
     key: 'status',
     dataIndex: 'status',
     render: (status, record, index) => (
       <Tag key={index} color={status === 'INACTIVE' ? 'volcano' : 'green'}>
-        {status}
+        {status === 'INACTIVE' ? 'Đang tắt' : 'Đang hoạt động'}
       </Tag>
     ),
   },
   {
-    title: 'Patient',
+    title: 'Tên bệnh nhân',
     key: 'patient',
     dataIndex: 'patient',
     render: (index, { patient }) => <p key={index}>{patient.name}</p>,

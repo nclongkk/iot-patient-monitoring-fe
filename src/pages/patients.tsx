@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import axios, { setAuthToken } from '../api/axiosService';
 import { useNavigate } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
-import { Button, Flex, Tag } from 'antd';
+import { Button, Flex, Space, Tag } from 'antd';
 import useSelectPatient, {
   addAllPatients,
   isOpenModalAtom,
@@ -13,36 +13,46 @@ import useSelectPatient, {
 } from '../atoms/patient';
 import { IPatient } from '../types/patient';
 import { PatientFormModal } from '../components/patientFormModal';
-import { PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 const columns: ColumnsType<IPatient> = [
   {
-    title: 'ID',
+    title: 'Mã bệnh nhân',
     dataIndex: 'id',
     key: 'id',
     render: (id) => <p>{id}</p>,
   },
   {
-    title: 'Name',
+    title: 'Tên bệnh nhân',
     dataIndex: 'name',
     key: 'name',
     render: (name) => <p>{name}</p>,
   },
 
   {
-    title: 'Gender',
+    title: 'Giới tính',
     key: 'gender',
     dataIndex: 'gender',
     render: (gender: string) => (
       <Tag color={gender === 'male' ? '#108ee9' : '#f50'}>
-        {gender.toUpperCase()}
+        {gender === 'male' ? 'Nam' : 'Nữ'}
       </Tag>
     ),
   },
   {
-    title: 'Age',
+    title: 'Tuổi',
     key: 'age',
     dataIndex: 'age',
     render: (age) => <p>{age}</p>,
+  },
+  {
+    title: 'Thao tác',
+    key: 'action',
+    render: (_, record) => (
+      <Space size="middle">
+        <EditOutlined style={{ color: '#0976c4' }} />
+        <DeleteOutlined style={{ color: '#f5222d' }} />
+      </Space>
+    ),
   },
 ];
 
@@ -89,7 +99,7 @@ export const Patients = () => {
       <Flex>
         <Button type="primary" onClick={() => setIsOpenModal(true)}>
           <PlusOutlined />
-          Add new patient
+          Thêm bệnh nhân
         </Button>
       </Flex>
       <Table

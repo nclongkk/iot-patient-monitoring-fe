@@ -106,7 +106,7 @@ export const Equipment = () => {
   const fetchPatients = useCallback(async () => {
     setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
-      `http://14.225.207.82:3000/api/patients?limit=100`
+      `http://14.225.207.82:3000/api/patients?limit=100`,
     );
 
     const data = await response.data.data;
@@ -123,30 +123,30 @@ export const Equipment = () => {
 
   if (!selectedEquipment) return null;
   const getPatientInfoItems = (
-    patient: IPatient
+    patient: IPatient,
   ): DescriptionsProps['items'] => [
     {
       key: '1',
-      label: 'Patient ID',
+      label: 'Mã bệnh nhân',
       children: patient.id,
     },
     {
       key: '2',
-      label: 'Gender',
+      label: 'Giới tính',
       children: (
         <Tag color={patient.gender === 'male' ? '#108ee9' : '#f50'}>
-          {patient.gender?.toUpperCase()}
+          {patient.gender === 'male' ? 'Nam' : 'Nữ'}
         </Tag>
       ),
     },
     {
       key: '3',
-      label: 'Name',
+      label: 'Tên bệnh nhân',
       children: patient.name,
     },
     {
       key: '4',
-      label: 'Age',
+      label: 'Tuổi',
       children: patient.age,
     },
   ];
@@ -155,7 +155,7 @@ export const Equipment = () => {
       key: '1',
       label: (
         <p>
-          <b>Equipment ID</b>
+          <b>Mã thiết bị</b>
         </p>
       ),
       children: selectedEquipment.id,
@@ -165,12 +165,12 @@ export const Equipment = () => {
 
       label: (
         <p>
-          <b>Status</b>
+          <b>Trạng thái</b>
         </p>
       ),
       children: (
         <Tag color={statusEquipment === 'INACTIVE' ? 'volcano' : 'green'}>
-          {statusEquipment}
+          {statusEquipment === 'INACTIVE' ? 'Đang tắt' : 'Đang hoạt động'}
         </Tag>
       ),
     },
@@ -178,7 +178,7 @@ export const Equipment = () => {
       key: '3',
       label: (
         <div>
-          <b style={{ marginRight: '12px' }}>Patient Info</b>
+          <b style={{ marginRight: '12px' }}>Thông tin bệnh nhân</b>
           {isUpdate ? (
             <Button
               style={{ backgroundColor: '#52c41a' }}
@@ -194,7 +194,7 @@ export const Equipment = () => {
                 }
               }}
             >
-              Save
+              Lưu
               <SaveOutlined />
             </Button>
           ) : (
@@ -204,7 +204,7 @@ export const Equipment = () => {
                 setIsUpdate(true);
               }}
             >
-              Update
+              Cập nhật
               <EditOutlined />
             </Button>
           )}
@@ -216,7 +216,7 @@ export const Equipment = () => {
           {isUpdate && (
             <Flex align={'center'} gap={'large'}>
               <Title level={5} style={{ marginBottom: 0 }}>
-                Selecting patient ID:
+                Chọn mã bệnh nhân cần cập nhật:
               </Title>
               <Select
                 size={'large'}
@@ -235,7 +235,7 @@ export const Equipment = () => {
           <Descriptions
             column={2}
             items={getPatientInfoItems(
-              selectedPatient ? selectedPatient : selectedEquipment.patient
+              selectedPatient ? selectedPatient : selectedEquipment.patient,
             )}
           />
         </Flex>
@@ -246,7 +246,7 @@ export const Equipment = () => {
   const handleUpdatePatientOfEquipment = async (patientId: number) => {
     try {
       const response = await axios.post(
-        `http://14.225.207.82:3000/api/equipments/${selectedEquipment.id}/patient/${patientId}`
+        `http://14.225.207.82:3000/api/equipments/${selectedEquipment.id}/patient/${patientId}`,
       );
 
       // Handle the response as needed
@@ -254,12 +254,12 @@ export const Equipment = () => {
       if (response.data.status === 'success') {
         console.log('here');
 
-        message.success('Update successfully!');
+        message.success('Cập nhật thành công!!');
         setIsUpdate(false);
       }
     } catch (error) {
       console.error('API Error:', error);
-      message.error('Update failed!');
+      message.error('Cập nhật thất bại!');
     }
   };
   return (
@@ -271,12 +271,12 @@ export const Equipment = () => {
             title: (
               <Link to="/equipments">
                 <AuditOutlined style={{ marginRight: '6px' }} />
-                Equipment List
+                Danh sách thiết bị
               </Link>
             ),
           },
           {
-            title: 'Equipment Detail',
+            title: 'Thông tin thiết bị',
           },
         ]}
       />
@@ -285,6 +285,7 @@ export const Equipment = () => {
         items={equipmentInfo}
         column={2}
         layout="vertical"
+        style={{ marginBottom: '14px' }}
       />
       {heartbeatData.length > 0 && (
         <>
