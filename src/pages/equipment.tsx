@@ -1,25 +1,53 @@
-import { Card, Col, Row, Tag, Typography } from 'antd';
-import useSelectEquipment from '../atoms/equipment';
+import {
+  Breadcrumb,
+  Button,
+  Descriptions,
+  DescriptionsProps,
+  Flex,
+  Select,
+  Tag,
+  Typography,
+  message,
+} from 'antd';
+import useSelectEquipment, { equipmentsState } from '../atoms/equipment';
 import { useAtom } from 'jotai';
 import {
   heartbeatState,
   spo2State,
   statusEquipmentState,
 } from '../atoms/socketData';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
 import HeartbeatChart from '../components/heartbeatChart';
 import SPO2Chart from '../components/SPO2Chart';
+import { AuditOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import useSelectPatient, {
+  addAllPatients,
+  patientsState,
+  selectPatient,
+} from '../atoms/patient';
+import axios, { setAuthToken } from '../api/axiosService';
+import { IPatient } from '../types/patient';
+import { Link } from 'react-router-dom';
 const { Title } = Typography;
 
 export const Equipment = () => {
   const [selectedEquipment] = useSelectEquipment();
+  const [equipments] = useAtom(equipmentsState);
+  console.log({ equipments });
 
   const [heartbeatData, setHeartbeatData] = useAtom(heartbeatState);
   const [spo2Data, setSPO2Data] = useAtom(spo2State);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const [statusEquipment, setStatusEquipment] = useAtom(statusEquipmentState);
+
+  const [, addPatients] = useAtom(addAllPatients);
+  const [patients] = useAtom(patientsState);
+  const [selectedPatient] = useAtom(selectPatient);
+  const [, setSelectPatient] = useSelectPatient();
+
   useEffect(() => {
     if (!selectedEquipment?.id) return;
     const socket = io('http://14.225.207.82:3000/api/socket');
@@ -75,32 +103,189 @@ export const Equipment = () => {
     };
   }, []); // Empty dependency array ensures that this effect runs only once
 
-  if (!selectedEquipment) return null;
+  const fetchPatients = useCallback(async () => {
+    setAuthToken(localStorage.getItem('token'));
+    const response = await axios.get(
+      `http://14.225.207.82:3000/api/patients?limit=100`
+    );
 
+    const data = await response.data.data;
+
+    addPatients(data.data);
+  }, [addPatients]);
+
+  useEffect(() => {
+    fetchPatients();
+    return () => {
+      setSelectPatient(undefined);
+    };
+  }, []);
+
+  if (!selectedEquipment) return null;
+  const getPatientInfoItems = (
+    patient: IPatient
+  ): DescriptionsProps['items'] => [
+    {
+      key: '1',
+      label: 'Patient ID',
+      children: patient.id,
+    },
+    {
+      key: '2',
+      label: 'Gender',
+      children: (
+        <Tag color={patient.gender === 'male' ? '#108ee9' : '#f50'}>
+          {patient.gender?.toUpperCase()}
+        </Tag>
+      ),
+    },
+    {
+      key: '3',
+      label: 'Name',
+      children: patient.name,
+    },
+    {
+      key: '4',
+      label: 'Age',
+      children: patient.age,
+    },
+  ];
+  const equipmentInfo: DescriptionsProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <p>
+          <b>Equipment ID</b>
+        </p>
+      ),
+      children: selectedEquipment.id,
+    },
+    {
+      key: '2',
+
+      label: (
+        <p>
+          <b>Status</b>
+        </p>
+      ),
+      children: (
+        <Tag color={statusEquipment === 'INACTIVE' ? 'volcano' : 'green'}>
+          {statusEquipment}
+        </Tag>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <div>
+          <b style={{ marginRight: '12px' }}>Patient Info</b>
+          {isUpdate ? (
+            <Button
+              style={{ backgroundColor: '#52c41a' }}
+              type="primary"
+              onClick={() => {
+                if (
+                  selectedPatient &&
+                  selectedPatient?.id !== selectedEquipment?.patient.id
+                ) {
+                  handleUpdatePatientOfEquipment(selectedPatient.id);
+                } else {
+                  setIsUpdate(false);
+                }
+              }}
+            >
+              Save
+              <SaveOutlined />
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsUpdate(true);
+              }}
+            >
+              Update
+              <EditOutlined />
+            </Button>
+          )}
+        </div>
+      ),
+      span: 2,
+      children: (
+        <Flex gap={'large'} vertical>
+          {isUpdate && (
+            <Flex align={'center'} gap={'large'}>
+              <Title level={5} style={{ marginBottom: 0 }}>
+                Selecting patient ID:
+              </Title>
+              <Select
+                size={'large'}
+                defaultValue={selectedEquipment.patient.id}
+                onChange={(value) => {
+                  setSelectPatient(patients.find((item) => item.id === value));
+                }}
+                options={patients.map((item) => ({
+                  value: item.id,
+                  label: `${item.id} - ${item.name}`,
+                }))}
+                style={{ width: '300px' }}
+              />
+            </Flex>
+          )}
+          <Descriptions
+            column={2}
+            items={getPatientInfoItems(
+              selectedPatient ? selectedPatient : selectedEquipment.patient
+            )}
+          />
+        </Flex>
+      ),
+    },
+  ];
+
+  const handleUpdatePatientOfEquipment = async (patientId: number) => {
+    try {
+      const response = await axios.post(
+        `http://14.225.207.82:3000/api/equipments/${selectedEquipment.id}/patient/${patientId}`
+      );
+
+      // Handle the response as needed
+      console.log('API Response:', patientId, response.data);
+      if (response.data.status === 'success') {
+        console.log('here');
+
+        message.success('Update successfully!');
+        setIsUpdate(false);
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      message.error('Update failed!');
+    }
+  };
   return (
     <div>
-      <Title level={2}>Equipment Detail</Title>
-      <Row gutter={16}>
-        <Col span={12}>
-          <Card title="Equipment Information" type="inner">
-            <p>ID:&nbsp;{selectedEquipment.id}</p>
-            <p>
-              Status:&nbsp;
-              <Tag color={statusEquipment === 'INACTIVE' ? 'volcano' : 'green'}>
-                {statusEquipment}
-              </Tag>
-            </p>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="Patient Information" type="inner">
-            <p>ID:&nbsp;{selectedEquipment.patient.id}</p>
-            <p>Name:&nbsp;{selectedEquipment.patient.name}</p>
-            <p>Gender:&nbsp;{selectedEquipment.patient.gender}</p>
-            <p>Age:&nbsp;{selectedEquipment.patient.age}</p>
-          </Card>
-        </Col>
-      </Row>
+      <Breadcrumb
+        style={{ marginBottom: '16px' }}
+        items={[
+          {
+            title: (
+              <Link to="/equipments">
+                <AuditOutlined style={{ marginRight: '6px' }} />
+                Equipment List
+              </Link>
+            ),
+          },
+          {
+            title: 'Equipment Detail',
+          },
+        ]}
+      />
+      <Descriptions
+        bordered
+        items={equipmentInfo}
+        column={2}
+        layout="vertical"
+      />
       {heartbeatData.length > 0 && (
         <>
           <Title level={3}> Heartbeat Chart</Title>

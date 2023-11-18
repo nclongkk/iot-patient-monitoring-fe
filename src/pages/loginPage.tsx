@@ -12,9 +12,9 @@ const LoginPage: React.FC = () => {
     <AntLayout style={{ height: '100vh' }}>
       <Header
         style={{ padding: 10, background: colorBgContainer }}
-        title="My App"
+        title="Patient monitoring"
       >
-        <Title style={{ marginBottom: '24px' }}>My App</Title>
+        <Title style={{ marginBottom: '24px' }}>Patient monitoring</Title>
       </Header>
       <Content style={{ margin: 'auto 16px' }}>
         <LoginForm />
