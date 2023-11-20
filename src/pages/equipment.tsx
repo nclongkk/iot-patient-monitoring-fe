@@ -35,7 +35,6 @@ const { Title } = Typography;
 export const Equipment = () => {
   const [selectedEquipment] = useSelectEquipment();
   const [equipments] = useAtom(equipmentsState);
-  console.log({ equipments });
 
   const [heartbeatData, setHeartbeatData] = useAtom(heartbeatState);
   const [spo2Data, setSPO2Data] = useAtom(spo2State);
@@ -104,7 +103,6 @@ export const Equipment = () => {
   }, []); // Empty dependency array ensures that this effect runs only once
 
   const fetchPatients = useCallback(async () => {
-    setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
       `http://14.225.207.82:3000/api/patients?limit=100`,
     );
@@ -249,16 +247,11 @@ export const Equipment = () => {
         `http://14.225.207.82:3000/api/equipments/${selectedEquipment.id}/patient/${patientId}`,
       );
 
-      // Handle the response as needed
-      console.log('API Response:', patientId, response.data);
       if (response.data.status === 'success') {
-        console.log('here');
-
         message.success('Cập nhật thành công!!');
         setIsUpdate(false);
       }
     } catch (error) {
-      console.error('API Error:', error);
       message.error('Cập nhật thất bại!');
     }
   };

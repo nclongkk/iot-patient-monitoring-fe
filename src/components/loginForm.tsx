@@ -6,28 +6,19 @@ const { Title } = Typography;
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const onFinish = async (values: any) => {
-    console.log('Received values:', values);
-    const { email, password } = values;
-    // Add your authentication logic here
+  const onFinish = async (values: { email: string; password: string }) => {
     try {
       const response = await axios.post(
         'https://patient-monitoring.site/api/auth/login',
-        {
-          email,
-          password,
-        },
+        values,
       );
-      console.log({ response });
       if (response.data.status === 'success') {
-        // Handle successful login, e.g., store token in local storage, etc.
         message.success('Đăng nhập thành công!');
         navigate('/');
         localStorage.setItem('token', response.data.data.accessToken);
         setAuthToken(response.data.data.accessToken);
       }
     } catch (error) {
-      console.log({ error });
       message.error('Đăng nhập thất bại!');
     }
   };
@@ -47,32 +38,29 @@ const LoginForm: React.FC = () => {
         rules={[
           {
             type: 'email',
-            message: 'The input is not a valid email address!',
+            message: 'Vui lòng nhập email hợp lệ!',
           },
-          { required: true, message: 'Please input your email!' },
+          { required: true, message: 'Vui lòng nhập email!' },
         ]}
       >
-        <Input
-          prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder="Email"
-        />
+        <Input prefix={<UserOutlined />} placeholder="Email" />
       </Form.Item>
 
       <Form.Item
         name="password"
         rules={[
-          { required: true, message: 'Please input your password!' },
-          { min: 6, message: 'Password must be at least 6 characters long' },
+          { required: true, message: 'Vui lòng nhập mật khẩu!' },
+          { min: 6, message: 'Mật khẩu phải chứa tối thiểu 6 kí tự' },
         ]}
       >
         <Input
-          prefix={<LockOutlined className="site-form-item-icon" />}
+          prefix={<LockOutlined />}
           type="password"
           placeholder="Mật khẩu"
         />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item style={{ paddingTop: '16px' }}>
         <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
           Đăng nhập
         </Button>

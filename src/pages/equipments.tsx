@@ -8,7 +8,7 @@ import axios, { setAuthToken } from '../api/axiosService';
 import { useNavigate } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
 import { IEquipment } from '../types/equipment';
-import { Tag } from 'antd';
+import { Spin, Tag } from 'antd';
 
 const columns: ColumnsType<IEquipment> = [
   {
@@ -43,7 +43,6 @@ export const Equipments = () => {
   const navigate = useNavigate();
 
   const fetchEquipments = async () => {
-    setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
       'https://patient-monitoring.site/api/equipments',
     );
@@ -62,6 +61,7 @@ export const Equipments = () => {
   };
 
   return (
+    // <Spin spinning>
     <Table
       size="small"
       columns={columns}
@@ -76,5 +76,6 @@ export const Equipments = () => {
         };
       }}
     />
+    // </Spin>
   );
 };

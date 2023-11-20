@@ -1,14 +1,14 @@
 import { atom, useAtom } from 'jotai';
 import { IPatient } from '../types/patient';
 
-type SelectPatient = IPatient | undefined;
+export type SelectPatient = IPatient | undefined;
 
 export const patientsState = atom<IPatient[]>([]);
 export const addAllPatients = atom(
   null,
   (_, set, fetchedPatients: IPatient[]) => {
     set(patientsState, fetchedPatients);
-  }
+  },
 );
 export const selectPatient = atom<SelectPatient>(undefined);
 
@@ -32,7 +32,7 @@ export const setPaginationInfoState = atom(
   null,
   (_, set, paginationInfo: PaginationInfo) => {
     set(paginationInfoState, paginationInfo);
-  }
+  },
 );
 
 export const isOpenModalAtom = atom(false);

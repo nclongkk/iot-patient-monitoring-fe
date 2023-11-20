@@ -13,12 +13,13 @@ export const setAuthToken = (token: string | null): void => {
 axios.interceptors.request.use(
   (config) => {
     // You can modify the request config here (e.g., adding headers)
+    setAuthToken(localStorage.getItem('token'));
     return config;
   },
   (error: AxiosError) => {
     // Handle request error
     return Promise.reject(error);
-  }
+  },
 );
 
 // Axios response interceptor
@@ -30,7 +31,7 @@ axios.interceptors.response.use(
   (error: AxiosError) => {
     // Handle response error
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axios;

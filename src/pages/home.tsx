@@ -118,7 +118,6 @@ export const Home = () => {
   };
 
   const fetchEquipments = async () => {
-    setAuthToken(localStorage.getItem('token'));
     const response = await axios.get(
       'https://patient-monitoring.site/api/statistics',
     );

@@ -13,7 +13,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="equipments" element={<Equipments />} />
         <Route path="equipments/:id" element={<Equipment />} />
-        <Route key="patients" path="/patients" element={<Patients />} />
+        <Route path="/patients" element={<Patients />} />
         {/* Using path="*"" means "match anything", so this route
                 acts like a catch-all for URLs that we don't have explicit
             routes for. */}
