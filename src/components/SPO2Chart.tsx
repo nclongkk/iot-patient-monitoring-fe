@@ -16,6 +16,7 @@ const SPO2Chart: React.FC<SPO2ChartProps> = () => {
         stroke="#82ca9d"
         isAnimationActive={false}
         dot={false}
+        type={'monotone'}
       />
     </LineChart>
   );

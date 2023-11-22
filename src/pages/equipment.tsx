@@ -49,7 +49,7 @@ export const Equipment = () => {
 
   useEffect(() => {
     if (!selectedEquipment?.id) return;
-    const socket = io('http://14.225.207.82:3000/api/socket');
+    const socket = io('https://patient-monitoring.site/socket.io');
 
     // Handle connect event
     socket.on('connect', () => {
@@ -104,7 +104,7 @@ export const Equipment = () => {
 
   const fetchPatients = useCallback(async () => {
     const response = await axios.get(
-      `http://14.225.207.82:3000/api/patients?limit=100`,
+      `https://patient-monitoring.site/api/patients?limit=100`,
     );
 
     const data = await response.data.data;
@@ -244,7 +244,7 @@ export const Equipment = () => {
   const handleUpdatePatientOfEquipment = async (patientId: number) => {
     try {
       const response = await axios.post(
-        `http://14.225.207.82:3000/api/equipments/${selectedEquipment.id}/patient/${patientId}`,
+        `https://patient-monitoring.site/api/equipments/${selectedEquipment.id}/patient/${patientId}`,
       );
 
       if (response.data.status === 'success') {
