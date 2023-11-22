@@ -9,46 +9,47 @@ import {
   Typography,
   message,
 } from 'antd';
-import useSelectEquipment, { equipmentsState } from '../atoms/equipment';
 import { useAtom } from 'jotai';
 import {
   heartbeatState,
   spo2State,
   statusEquipmentState,
 } from '../atoms/socketData';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
 import HeartbeatChart from '../components/heartbeatChart';
 import SPO2Chart from '../components/SPO2Chart';
 import { AuditOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
-import useSelectPatient, {
-  addAllPatients,
-  patientsState,
-  selectPatient,
-} from '../atoms/patient';
-import axios, { setAuthToken } from '../api/axiosService';
+import axios from '../api/axiosService';
 import { IPatient } from '../types/patient';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import { fetchEquipment } from '../api/equipmentService';
+import { fetchPatients } from '../api/patientService';
 const { Title } = Typography;
 
 export const Equipment = () => {
-  const [selectedEquipment] = useSelectEquipment();
-  const [equipments] = useAtom(equipmentsState);
+  const { pathname } = useLocation();
+
+  const { data: equipment } = useQuery('equipment', () =>
+    fetchEquipment(pathname.split('/')[2]),
+  );
 
   const [heartbeatData, setHeartbeatData] = useAtom(heartbeatState);
   const [spo2Data, setSPO2Data] = useAtom(spo2State);
   const [isUpdate, setIsUpdate] = useState(false);
 
+  const [updatedPatient, setUpdatedPatient] = useState(equipment?.patient);
+
   const [statusEquipment, setStatusEquipment] = useAtom(statusEquipmentState);
 
-  const [, addPatients] = useAtom(addAllPatients);
-  const [patients] = useAtom(patientsState);
-  const [selectedPatient] = useAtom(selectPatient);
-  const [, setSelectPatient] = useSelectPatient();
+  const { data: patientsData } = useQuery('patients', () =>
+    fetchPatients(1, 100),
+  );
 
   useEffect(() => {
-    if (!selectedEquipment?.id) return;
+    if (!equipment?.id) return;
     const socket = io('https://patient-monitoring.site/socket.io');
 
     // Handle connect event
@@ -57,11 +58,11 @@ export const Equipment = () => {
     });
 
     socket.on('equipment-status', (data) => {
-      if (data?.id === selectedEquipment.id && data?.status === 'ACTIVE') {
+      if (data?.id === equipment.id && data?.status === 'ACTIVE') {
         setStatusEquipment('ACTIVE');
 
         const MAX_DATA = 100;
-        socket.on(`sensor-data/${selectedEquipment.id}`, (data) => {
+        socket.on(`sensor-data/${equipment.id}`, (data) => {
           const time = dayjs(data.timestamp).format('HH:m:ss');
           heartbeatData.slice(heartbeatData.length - 5);
           setHeartbeatData((previousState) => [
@@ -77,13 +78,8 @@ export const Equipment = () => {
             { spo2: data.spo2, time },
           ]);
         });
-      } else if (
-        data?.id !== selectedEquipment.id ||
-        data?.status !== 'ACTIVE'
-      ) {
+      } else if (data?.id !== equipment.id || data?.status !== 'ACTIVE') {
         setStatusEquipment('INACTIVE');
-        // setHeartbeatData([]);
-        // setSPO2Data([]);
       }
     });
 
@@ -100,26 +96,10 @@ export const Equipment = () => {
       setHeartbeatData([]);
       setSPO2Data([]);
     };
-  }, []); // Empty dependency array ensures that this effect runs only once
+  }, [equipment?.id]);
 
-  const fetchPatients = useCallback(async () => {
-    const response = await axios.get(
-      `https://patient-monitoring.site/api/patients?limit=100`,
-    );
+  if (!equipment) return null;
 
-    const data = await response.data.data;
-
-    addPatients(data.data);
-  }, [addPatients]);
-
-  useEffect(() => {
-    fetchPatients();
-    return () => {
-      setSelectPatient(undefined);
-    };
-  }, []);
-
-  if (!selectedEquipment) return null;
   const getPatientInfoItems = (
     patient: IPatient,
   ): DescriptionsProps['items'] => [
@@ -156,7 +136,7 @@ export const Equipment = () => {
           <b>Mã thiết bị</b>
         </p>
       ),
-      children: selectedEquipment.id,
+      children: equipment.id,
     },
     {
       key: '2',
@@ -183,10 +163,11 @@ export const Equipment = () => {
               type="primary"
               onClick={() => {
                 if (
-                  selectedPatient &&
-                  selectedPatient?.id !== selectedEquipment?.patient.id
+                  equipment.patient &&
+                  updatedPatient &&
+                  equipment.patient?.id !== updatedPatient.id
                 ) {
-                  handleUpdatePatientOfEquipment(selectedPatient.id);
+                  handleUpdatePatientOfEquipment(updatedPatient.id);
                 } else {
                   setIsUpdate(false);
                 }
@@ -218,11 +199,13 @@ export const Equipment = () => {
               </Title>
               <Select
                 size={'large'}
-                defaultValue={selectedEquipment.patient.id}
+                defaultValue={updatedPatient?.id}
                 onChange={(value) => {
-                  setSelectPatient(patients.find((item) => item.id === value));
+                  setUpdatedPatient(
+                    patientsData?.patients.find((item) => item.id === value),
+                  );
                 }}
-                options={patients.map((item) => ({
+                options={patientsData?.patients.map((item) => ({
                   value: item.id,
                   label: `${item.id} - ${item.name}`,
                 }))}
@@ -232,9 +215,7 @@ export const Equipment = () => {
           )}
           <Descriptions
             column={2}
-            items={getPatientInfoItems(
-              selectedPatient ? selectedPatient : selectedEquipment.patient,
-            )}
+            items={getPatientInfoItems(updatedPatient ?? equipment.patient)}
           />
         </Flex>
       ),
@@ -244,7 +225,7 @@ export const Equipment = () => {
   const handleUpdatePatientOfEquipment = async (patientId: number) => {
     try {
       const response = await axios.post(
-        `https://patient-monitoring.site/api/equipments/${selectedEquipment.id}/patient/${patientId}`,
+        `https://patient-monitoring.site/api/equipments/${equipment.id}/patient/${patientId}`,
       );
 
       if (response.data.status === 'success') {

@@ -30,7 +30,7 @@ const LoginForm: React.FC = () => {
       onFinish={onFinish}
       style={{ maxWidth: '400px', margin: 'auto', marginTop: '150px' }}
     >
-      <Flex justify={'center'}>
+      <Flex justify={'center'} style={{ paddingBottom: '16px' }}>
         <Title>Đăng nhập hệ thống</Title>
       </Flex>
       <Form.Item

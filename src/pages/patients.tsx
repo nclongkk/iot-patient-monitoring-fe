@@ -1,9 +1,9 @@
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from '../api/axiosService';
 import Table, { ColumnsType } from 'antd/es/table';
 import { Button, Flex, Space, Spin, Tag, message } from 'antd';
-import useSelectPatient, {
+import {
   isOpenModalAtom,
   paginationInfoState,
   setPaginationInfoState,
@@ -12,17 +12,17 @@ import { IPatient } from '../types/patient';
 import { PatientFormModal } from '../components/patientFormModal';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useQuery } from 'react-query';
-import { fetchPatients } from '../api/patientsService';
+import { fetchPatients } from '../api/patientService';
 
 export const Patients = () => {
-  const [, setSelectedPatient] = useSelectPatient();
-
   const [paginationInfo] = useAtom(paginationInfoState);
   const [, setPaginationInfo] = useAtom(setPaginationInfoState);
 
   const [, setIsOpenModal] = useAtom(isOpenModalAtom);
 
-  const { data, isLoading, isError, refetch } = useQuery(
+  const [patient, setPatient] = useState<IPatient | undefined>(undefined);
+
+  const { data, isLoading, refetch } = useQuery(
     ['patients', paginationInfo.current],
     () => fetchPatients(paginationInfo.current),
   );
@@ -41,7 +41,6 @@ export const Patients = () => {
         refetch();
       }
     } catch (error) {
-      console.error('API Error:', error);
       message.error('Xoá bệnh nhân thất bại!');
     }
   };
@@ -84,8 +83,8 @@ export const Patients = () => {
           <EditOutlined
             style={{ color: '#0976c4' }}
             onClick={() => {
-              setSelectedPatient(record);
               setIsOpenModal(true);
+              setPatient(record);
             }}
           />
           <DeleteOutlined
@@ -96,6 +95,7 @@ export const Patients = () => {
       ),
     },
   ];
+
   return (
     <Flex vertical gap="large">
       <Flex>
@@ -103,7 +103,7 @@ export const Patients = () => {
           type="primary"
           onClick={() => {
             setIsOpenModal(true);
-            setSelectedPatient(undefined);
+            setPatient(undefined);
           }}
         >
           <PlusOutlined />
@@ -121,12 +121,12 @@ export const Patients = () => {
               defaultCurrent: data?.paging.limit,
               total: data?.paging.total,
             },
-            onChange(page, pageSize) {
+            onChange(page) {
               setPaginationInfo({ ...paginationInfo, current: page });
             },
           }}
         />
-        <PatientFormModal />
+        <PatientFormModal patient={patient} />
       </Spin>
     </Flex>
   );

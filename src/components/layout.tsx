@@ -1,6 +1,5 @@
 import {
   AuditOutlined,
-  BellOutlined,
   HomeOutlined,
   LogoutOutlined,
   UserOutlined,
@@ -9,7 +8,6 @@ import {
 import {
   Layout as AntLayout,
   Avatar,
-  Badge,
   Button,
   Dropdown,
   Menu,
@@ -105,12 +103,6 @@ const Layout: React.FC = () => {
             justifyContent: 'space-between',
           }}
         >
-          <div style={{ marginBottom: '-12px' }}>
-            <Badge count={5}>
-              <BellOutlined style={{ fontSize: '24px' }} />
-            </Badge>
-          </div>
-
           <Dropdown menu={{ items: profileItems }}>
             <div style={{ marginLeft: '16px' }}>
               <Avatar size="large" icon={<UserOutlined />} />
@@ -141,8 +133,6 @@ const Layout: React.FC = () => {
           </div>
         </Content>
       </AntLayout>
-
-      {/* <Footer style={{ textAlign: 'center' }}>Footer</Footer> */}
     </AntLayout>
   );
 };

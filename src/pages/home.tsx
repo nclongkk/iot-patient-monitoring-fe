@@ -10,7 +10,7 @@ import {
   message,
   theme,
 } from 'antd';
-import axios, { setAuthToken } from '../api/axiosService';
+import axios from '../api/axiosService';
 import { useEffect, useState } from 'react';
 import {
   StatisticType,
@@ -24,6 +24,7 @@ import step1 from '../assets/step1.png';
 import step2 from '../assets/step2.png';
 import step3 from '../assets/step3.png';
 import step4 from '../assets/step4.png';
+import { useNavigate } from 'react-router-dom';
 
 const steps = [
   {
@@ -90,6 +91,7 @@ const steps = [
   },
 ];
 export const Home = () => {
+  const navigate = useNavigate();
   const { token } = theme.useToken();
   const [statisticData] = useAtom(statisticState);
   const [, setStatisticData] = useAtom(addStatisticState);
@@ -117,17 +119,21 @@ export const Home = () => {
     height: 'calc(100vh / 2)',
   };
 
-  const fetchEquipments = async () => {
-    const response = await axios.get(
-      'https://patient-monitoring.site/api/statistics',
-    );
+  const fetchStatistics = async () => {
+    try {
+      const response = await axios.get(
+        'https://patient-monitoring.site/api/statistics',
+      );
 
-    const data = (await response.data.data) as StatisticType;
-    setStatisticData(data);
+      const data = (await response.data.data) as StatisticType;
+      setStatisticData(data);
+    } catch (error) {
+      console.error({ error });
+    }
   };
 
   useEffect(() => {
-    fetchEquipments();
+    fetchStatistics();
   }, []);
 
   return (

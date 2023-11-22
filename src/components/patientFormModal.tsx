@@ -1,14 +1,11 @@
 import { Modal, Form, Input, Select, message } from 'antd';
 import { useAtom } from 'jotai';
-import useSelectPatient, {
-  isOpenModalAtom,
-  paginationInfoState,
-  selectPatient,
-} from '../atoms/patient';
+import { isOpenModalAtom, paginationInfoState } from '../atoms/patient';
 import axios from '../api/axiosService';
-import { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { fetchPatients } from '../api/patientsService';
+import { fetchPatients } from '../api/patientService';
+import { IPatient } from '../types/patient';
+import { useEffect } from 'react';
 const { Option } = Select;
 
 interface FormData {
@@ -17,19 +14,15 @@ interface FormData {
   gender: string;
 }
 
-export const PatientFormModal = () => {
+export const PatientFormModal = ({ patient }: { patient?: IPatient }) => {
   const [form] = Form.useForm();
   const [isOpenModal, setIsOpenModal] = useAtom(isOpenModalAtom);
-  const [selectedPatient] = useAtom(selectPatient);
-  const [, setSelectedPatient] = useSelectPatient();
 
   const [paginationInfo] = useAtom(paginationInfoState);
 
-  const { data, isLoading, isError, refetch } = useQuery(
-    ['patients', paginationInfo.current],
-    () => fetchPatients(paginationInfo.current),
+  const { refetch } = useQuery(['patients', paginationInfo.current], () =>
+    fetchPatients(paginationInfo.current),
   );
-  //   const mutation = useMutation(addPost);
 
   const handleAddPatient = async (data: FormData) => {
     try {
@@ -40,8 +33,6 @@ export const PatientFormModal = () => {
       if (response.data.status === 'success') {
         message.success('Thêm bệnh nhân thành công!');
         setIsOpenModal(false);
-        form.resetFields();
-        setSelectedPatient(undefined);
         refetch();
       }
     } catch (error) {
@@ -58,8 +49,7 @@ export const PatientFormModal = () => {
       if (response.data.status === 'success') {
         message.success('Cập nhật thông tin bệnh nhân thành công!');
         setIsOpenModal(false);
-        form.resetFields();
-        setSelectedPatient(undefined);
+        refetch();
       }
     } catch (error) {
       message.error('Cập nhật thông tin bệnh nhân thất bại!');
@@ -71,8 +61,8 @@ export const PatientFormModal = () => {
       .validateFields()
       .then((values) => {
         const formData: FormData = { ...values, age: Number(values.age) };
-        selectedPatient
-          ? handleUpdatePatient(selectedPatient?.id, formData)
+        patient
+          ? handleUpdatePatient(patient?.id, formData)
           : handleAddPatient(formData);
       })
       .catch((err) => {
@@ -81,24 +71,23 @@ export const PatientFormModal = () => {
   };
 
   useEffect(() => {
-    return () => {
-      setSelectedPatient(undefined);
-    };
-  }, [setSelectedPatient]);
+    if (patient) {
+      form.setFieldsValue(patient);
+    } else {
+      form.resetFields();
+    }
+  }, [form, patient]);
 
   return (
     <Modal
       open={isOpenModal}
-      title={
-        selectedPatient ? 'Cập nhật thông tin bệnh nhân' : 'Thêm bệnh nhân mới'
-      }
+      title={patient ? 'Cập nhật thông tin bệnh nhân' : 'Thêm bệnh nhân mới'}
       onCancel={() => {
         setIsOpenModal(false);
-        setSelectedPatient(undefined);
       }}
       onOk={handleOk}
       destroyOnClose
-      okText={selectedPatient ? 'Cập nhật' : 'Thêm'}
+      okText={patient ? 'Cập nhật' : 'Thêm'}
       cancelText={'Hủy bỏ'}
     >
       <Form form={form} layout="vertical">
