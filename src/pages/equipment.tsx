@@ -61,7 +61,7 @@ export const Equipment = () => {
       if (data?.id === equipment.id && data?.status === 'ACTIVE') {
         setStatusEquipment('ACTIVE');
 
-        const MAX_DATA = 100;
+        const MAX_DATA = 200;
         socket.on(`sensor-data/${equipment.id}`, (data) => {
           const time = dayjs(data.timestamp).format('HH:m:ss');
           heartbeatData.slice(heartbeatData.length - 5);
