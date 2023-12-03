@@ -24,7 +24,6 @@ import step1 from '../assets/step1.png';
 import step2 from '../assets/step2.png';
 import step3 from '../assets/step3.png';
 import step4 from '../assets/step4.png';
-import { useNavigate } from 'react-router-dom';
 
 const steps = [
   {
@@ -91,7 +90,6 @@ const steps = [
   },
 ];
 export const Home = () => {
-  const navigate = useNavigate();
   const { token } = theme.useToken();
   const [statisticData] = useAtom(statisticState);
   const [, setStatisticData] = useAtom(addStatisticState);

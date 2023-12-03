@@ -21,3 +21,15 @@ export const fetchEquipments = async () => {
 
   return data as IEquipment[];
 };
+
+export const fetchEquipmentHistory = async (start?: string, end?: string) => {
+  const response = await axios.get(
+    `https://patient-monitoring.site/api/equipments/sensor-data-history?start=${start}&end=${end}`,
+  );
+  if (!response) {
+    throw new Error('Network response was not ok');
+  }
+  const data = response.data.data;
+
+  return data;
+};

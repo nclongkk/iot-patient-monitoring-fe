@@ -131,21 +131,13 @@ export const Equipment = () => {
   const equipmentInfo: DescriptionsProps['items'] = [
     {
       key: '1',
-      label: (
-        <p>
-          <b>Mã thiết bị</b>
-        </p>
-      ),
+      label: <b>Mã thiết bị</b>,
       children: equipment.id,
     },
     {
       key: '2',
 
-      label: (
-        <p>
-          <b>Trạng thái</b>
-        </p>
-      ),
+      label: <b>Trạng thái</b>,
       children: (
         <Tag color={statusEquipment === 'INACTIVE' ? 'volcano' : 'green'}>
           {statusEquipment === 'INACTIVE' ? 'Đang tắt' : 'Đang hoạt động'}
@@ -263,13 +255,13 @@ export const Equipment = () => {
       />
       {heartbeatData.length > 0 && (
         <>
-          <Title level={3}> Heartbeat Chart</Title>
+          <Title level={3}>Biểu đồ nhịp tim</Title>
           <HeartbeatChart />
         </>
       )}
       {spo2Data.length > 0 && (
         <>
-          <Title level={3}> SPO2 Chart</Title>
+          <Title level={3}>Biểu đồ nồng độ oxi trong máu</Title>
           <SPO2Chart />
         </>
       )}

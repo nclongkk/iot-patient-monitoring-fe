@@ -13,10 +13,6 @@ export const fetchPatients = async (page: number, limit: number = 10) => {
 };
 
 export const fetchPatient = async (id: number | boolean) => {
-  if (typeof id === 'boolean') {
-    return {};
-  }
-
   const response = await axios.get(
     `https://patient-monitoring.site/api/patients/${id}`,
   );

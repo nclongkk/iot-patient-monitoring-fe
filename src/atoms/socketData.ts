@@ -1,10 +1,10 @@
 import { atom } from 'jotai';
 
-type HeartBeat = {
+export type HeartBeat = {
   heartbeat: number;
   time: string;
 };
-type SPO2 = {
+export type SPO2 = {
   spo2: number;
   time: string;
 };

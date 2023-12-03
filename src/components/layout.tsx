@@ -15,7 +15,6 @@ import {
   Typography,
   theme,
 } from 'antd';
-import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { setAuthToken } from '../api/axiosService';
 const { Header, Content, Sider } = AntLayout;
@@ -75,12 +74,7 @@ const Layout: React.FC = () => {
     },
   ];
 
-  useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      navigate('/login');
-    }
-  }, []);
-  if (!localStorage.getItem('token')) return null;
+  if (!localStorage.getItem('token')) navigate('/login');
 
   return (
     <AntLayout style={{ minHeight: '100vh', height: '100%' }}>
