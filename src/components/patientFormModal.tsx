@@ -29,6 +29,11 @@ export const PatientFormModal = ({ patient }: { patient?: IPatient }) => {
       const response = await axios.post(
         'https://patient-monitoring.site/api/patients',
         data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
       );
       if (response.data.status === 'success') {
         message.success('Thêm bệnh nhân thành công!');
@@ -45,6 +50,11 @@ export const PatientFormModal = ({ patient }: { patient?: IPatient }) => {
       const response = await axios.patch(
         `https://patient-monitoring.site/api/patients/${id}`,
         data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
       );
       if (response.data.status === 'success') {
         message.success('Cập nhật thông tin bệnh nhân thành công!');
@@ -105,6 +115,14 @@ export const PatientFormModal = ({ patient }: { patient?: IPatient }) => {
           rules={[{ required: true, message: 'Vui lòng nhập tuổi!' }]}
         >
           <Input type="number" placeholder="Nhập tuổi" />
+        </Form.Item>
+
+        <Form.Item
+          name="hospitalId"
+          label="Mã bệnh nhân"
+          rules={[{ required: true, message: 'Vui lòng nhập mã bệnh nhân' }]}
+        >
+          <Input type="string" placeholder="Nhập mã bệnh nhân" />
         </Form.Item>
 
         <Form.Item

@@ -87,7 +87,7 @@ export const EquipmentHistory = () => {
   };
 
   const range = (start: number, end: number) => {
-    const result = [];
+    const result: number[] = [];
     for (let i = start; i < end; i++) {
       result.push(i);
     }
@@ -150,7 +150,7 @@ export const EquipmentHistory = () => {
               disabledTime={disabledRangeTime}
               showTime
               defaultValue={[dayjs().subtract(3, 'day'), dayjs()]}
-              onChange={(dates) => {
+              onChange={(dates: any) => {
                 handleStartDateChange(dates?.[0]);
                 handleEndDateChange(dates?.[1]);
               }}

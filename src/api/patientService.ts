@@ -4,6 +4,11 @@ import axios from './axiosService';
 export const fetchPatients = async (page: number, limit: number = 10) => {
   const response = await axios.get(
     `https://patient-monitoring.site/api/patients?page=${page}&limit=${limit}`,
+        {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      }
+    }
   );
   if (!response) {
     throw new Error('Network response was not ok');
@@ -15,6 +20,11 @@ export const fetchPatients = async (page: number, limit: number = 10) => {
 export const fetchPatient = async (id: number | boolean) => {
   const response = await axios.get(
     `https://patient-monitoring.site/api/patients/${id}`,
+        {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      }
+    }
   );
   if (!response) {
     throw new Error('Network response was not ok');

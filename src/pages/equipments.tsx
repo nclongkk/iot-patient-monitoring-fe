@@ -61,7 +61,7 @@ export const Equipments = () => {
     {
       title: 'Lịch sử dữ liệu',
       key: 'history',
-      render: (index, record) => (
+      render: (_index, record) => (
         <Button
           type="link"
           onClick={(e) => {

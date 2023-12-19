@@ -16,7 +16,6 @@ import {
   statusEquipmentState,
 } from '../atoms/socketData';
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import dayjs from 'dayjs';
 import HeartbeatChart from '../components/heartbeatChart';
 import SPO2Chart from '../components/SPO2Chart';
@@ -27,6 +26,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { fetchEquipment } from '../api/equipmentService';
 import { fetchPatients } from '../api/patientService';
+import useSocket from '../hook/useSocket';
 const { Title } = Typography;
 
 export const Equipment = () => {
@@ -48,55 +48,48 @@ export const Equipment = () => {
     fetchPatients(1, 100),
   );
 
-  useEffect(() => {
-    if (!equipment?.id) return;
-    const socket = io('https://patient-monitoring.site/socket.io');
-
-    // Handle connect event
-    socket.on('connect', () => {
-      console.log(' Connected to the server');
-    });
-
-    socket.on('equipment-status', (data) => {
+  useSocket({
+    event: 'equipment-status',
+    callback: (data) => {
+      if (!equipment) return;
       if (data?.id === equipment.id && data?.status === 'ACTIVE') {
         setStatusEquipment('ACTIVE');
-
-        const MAX_DATA = 200;
-        socket.on(`sensor-data/${equipment.id}`, (data) => {
-          const time = dayjs(data.timestamp).format('HH:m:ss');
-          heartbeatData.slice(heartbeatData.length - 5);
-          setHeartbeatData((previousState) => [
-            ...(previousState.length > MAX_DATA
-              ? previousState.slice(previousState.length - MAX_DATA)
-              : previousState),
-            { heartbeat: data.heartbeat, time },
-          ]);
-          setSPO2Data((previousState) => [
-            ...(previousState.length > MAX_DATA
-              ? previousState.slice(previousState.length - MAX_DATA)
-              : previousState),
-            { spo2: data.spo2, time },
-          ]);
-        });
       } else if (data?.id !== equipment.id || data?.status !== 'ACTIVE') {
         setStatusEquipment('INACTIVE');
       }
-    });
+    },
+  });
 
-    // Handle disconnect event
-    socket.on('disconnect', () => {
-      console.log(' Disconnected from the server');
-    });
+  const equipmentSocketData = useSocket({
+    event: `sensor-data/${equipment?.id}`,
+    callback: (data) => {
+      const MAX_DATA = 200;
+      const time = dayjs(data.timestamp).format('HH:m:ss');
+      setHeartbeatData((previousState) => [
+        ...(previousState.length > MAX_DATA
+          ? previousState.slice(previousState.length - MAX_DATA)
+          : previousState),
+        { heartbeat: data.heartbeat, time },
+      ]);
+      setSPO2Data((previousState) => [
+        ...(previousState.length > MAX_DATA
+          ? previousState.slice(previousState.length - MAX_DATA)
+          : previousState),
+        { spo2: data.spo2, time },
+      ]);
+    },
+  });
 
-    // Cleanup on component unmount
-    return () => {
-      socket.disconnect();
-      console.log(' Cleanup');
+  // useEffect(() => {
+  //   return () => {
+  //     if (equipmentSocketData) {
+  //       equipmentSocketData.disconnect();
 
-      setHeartbeatData([]);
-      setSPO2Data([]);
-    };
-  }, [equipment?.id]);
+  //       setHeartbeatData([]);
+  //       setSPO2Data([]);
+  //     }
+  //   };
+  // }, [equipmentSocketData]);
 
   if (!equipment) return null;
 
@@ -218,6 +211,11 @@ export const Equipment = () => {
     try {
       const response = await axios.post(
         `https://patient-monitoring.site/api/equipments/${equipment.id}/patient/${patientId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
       );
 
       if (response.data.status === 'success') {

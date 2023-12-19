@@ -121,6 +121,11 @@ export const Home = () => {
     try {
       const response = await axios.get(
         'https://patient-monitoring.site/api/statistics',
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
       );
 
       const data = (await response.data.data) as StatisticType;

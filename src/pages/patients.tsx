@@ -34,6 +34,11 @@ export const Patients = () => {
     try {
       const response = await axios.delete(
         `https://patient-monitoring.site/api/patients/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
       );
 
       if (response.data.status === 'success') {
@@ -47,7 +52,7 @@ export const Patients = () => {
 
   const columns: ColumnsType<IPatient> = [
     {
-      title: 'Mã bệnh nhân',
+      title: 'ID',
       dataIndex: 'id',
       key: 'id',
       render: (id) => <p>{id}</p>,
@@ -74,6 +79,12 @@ export const Patients = () => {
       key: 'age',
       dataIndex: 'age',
       render: (age) => <p>{age}</p>,
+    },
+    {
+      title: 'Mã bệnh nhân',
+      key: 'hospitalId',
+      dataIndex: 'hospitalId',
+      render: (hospitalId) => <p>{hospitalId}</p>,
     },
     {
       title: 'Thao tác',
