@@ -100,18 +100,17 @@ const Layout: React.FC = () => {
     );
   }, [user]);
 
-  useSocket({
-    event: 'notification',
-    callback: (data) => {
-      console.log('notificationsss', data);
+  const { onEvent } = useSocket();
+  useEffect(() => {
+    onEvent('notification', (data: any) => {
       notification.warning({
-        message: 'New Notification',
-        description: data.message, // You should replace this with the actual property in your data
+        message: 'Cảnh báo',
+        description: data.message,
       });
       setNotifications((prev) => [data, ...prev]);
       setTotalNewNotifications((prev) => prev + 1);
-    },
-  });
+    });
+  }, []);
 
   const profileItems: MenuProps['items'] = [
     {
@@ -192,14 +191,12 @@ const Layout: React.FC = () => {
             }
             placement="bottomRight"
             trigger={['click']}
-            // visible={showNotifications}
+            onOpenChange={(open) => {
+              if (!open) markReadNotifications();
+            }}
           >
             <Badge count={totalNewNotifications}>
-              <Button
-                type="default"
-                shape="circle"
-                onClick={markReadNotifications}
-              >
+              <Button type="default" shape="circle">
                 <BellOutlined />
               </Button>
             </Badge>

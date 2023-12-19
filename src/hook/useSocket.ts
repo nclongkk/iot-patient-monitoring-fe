@@ -1,40 +1,46 @@
 // socketService.ts
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const socketUrl = 'https://patient-monitoring.site/socket.io';
 
-interface UseSocketOptions {
-  event?: string;
-  callback?: (data: any) => void;
-}
+const useSocket = <OnEventType, EmitEventType>() => {
+  const socketRef = useRef<Socket>();
 
-const useSocket = ({ event, callback }: UseSocketOptions): Socket | null => {
-  const socketRef = useRef<Socket | null>(null);
-
-  if (!socketRef.current) {
-    socketRef.current = io(socketUrl);
-
-    socketRef.current.on('connect', () => {
-      console.log('aConnected to the server');
-    });
-
-    if (event && callback) {
-      socketRef.current.on(event, callback);
-    }
-  }
-
-  useEffect(() => {
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        console.log('Disconnected from the server');
-      }
-    };
+  const onEvent = useCallback((ev: string, cb: (args: OnEventType) => void) => {
+    socketRef.current?.on(ev, cb);
   }, []);
 
-  return socketRef.current;
+  const emitEvent = useCallback((ev: string, args: EmitEventType) => {
+    socketRef.current?.emit(ev, args);
+  }, []);
+
+  useEffect(() => {
+    socketRef.current = io(socketUrl, {
+      transports: ["websocket"],
+      autoConnect: true,
+      withCredentials: true,
+    });
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to Socket.io");
+    });
+
+    socketRef.current.on("disconnect", (ev) => {
+      console.log("Disconnected from Socket.io", ev);
+    });
+
+    socketRef.current.on("unauthorized", (ev) => {
+      console.log("unauthorized", ev);
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [socketRef]);
+
+  return { onEvent, emitEvent };
 };
 
 export default useSocket;

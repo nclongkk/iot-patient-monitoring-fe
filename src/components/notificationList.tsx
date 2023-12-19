@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { List } from 'antd';
-import { formatDate } from '../utils/dateFormat';
 import { Link } from 'react-router-dom';
 import { fetchNotifications } from '../api/notificationService';
+import dayjs from 'dayjs';
 
 interface Notification {
   id: number;
@@ -73,12 +73,14 @@ const Notifications: React.FC<NotificationsProps> = ({
             >
               <List.Item.Meta
                 title={item.message}
-                description={`${formatDate(item.addedAt)}`}
+                description={`${dayjs(item.addedAt).format(
+                  'HH:mm:ss DD/MM/YYYY',
+                )}`}
               />
               <div
                 style={{
                   backgroundColor:
-                    new Date(item.createdAt) >
+                    new Date(item.addedAt) >
                     new Date(user.lastReadNotificationAt)
                       ? '#1677fe'
                       : '#fff',
