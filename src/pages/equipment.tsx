@@ -78,48 +78,6 @@ export const Equipment = () => {
       ]);
     });
   }, []);
-  // useSocket({
-  //   event: 'equipment-status',
-  //   callback: (data) => {
-  //     if (!equipment) return;
-  //     if (data?.id === equipment.id && data?.status === 'ACTIVE') {
-  //       setStatusEquipment('ACTIVE');
-  //     } else if (data?.id !== equipment.id || data?.status !== 'ACTIVE') {
-  //       setStatusEquipment('INACTIVE');
-  //     }
-  //   },
-  // });
-
-  // const equipmentSocketData = useSocket({
-  //   event: `sensor-data/${equipment?.id}`,
-  //   callback: (data) => {
-  //     const MAX_DATA = 200;
-  //     const time = dayjs(data.timestamp).format('HH:m:ss');
-  //     setHeartbeatData((previousState) => [
-  //       ...(previousState.length > MAX_DATA
-  //         ? previousState.slice(previousState.length - MAX_DATA)
-  //         : previousState),
-  //       { heartbeat: data.heartbeat, time },
-  //     ]);
-  //     setSPO2Data((previousState) => [
-  //       ...(previousState.length > MAX_DATA
-  //         ? previousState.slice(previousState.length - MAX_DATA)
-  //         : previousState),
-  //       { spo2: data.spo2, time },
-  //     ]);
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (equipmentSocketData) {
-  //       equipmentSocketData.disconnect();
-
-  //       setHeartbeatData([]);
-  //       setSPO2Data([]);
-  //     }
-  //   };
-  // }, [equipmentSocketData]);
 
   if (!equipment) return null;
 
@@ -129,7 +87,7 @@ export const Equipment = () => {
     {
       key: '1',
       label: 'Mã bệnh nhân',
-      children: patient.id,
+      children: patient.hospitalId,
     },
     {
       key: '2',

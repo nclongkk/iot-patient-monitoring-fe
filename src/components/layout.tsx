@@ -24,6 +24,13 @@ import Notifications from './notificationList';
 import { useEffect, useState } from 'react';
 import { fetchNotifications } from '../api/notificationService';
 import useSocket from '../hook/useSocket';
+import { useAtom } from 'jotai';
+import {
+  heartbeatState,
+  spo2State,
+  statusEquipmentState,
+} from '../atoms/socketData';
+import dayjs from 'dayjs';
 const { Header, Content, Sider } = AntLayout;
 const { Title } = Typography;
 
@@ -33,6 +40,9 @@ const Layout: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [totalNewNotifications, setTotalNewNotifications] = useState<number>(0);
+  const [, setHeartbeatData] = useAtom(heartbeatState);
+  const [, setSPO2Data] = useAtom(spo2State);
+  const [, setStatusEquipment] = useAtom(statusEquipmentState);
 
   const {
     token: { colorBgContainer },
@@ -100,7 +110,48 @@ const Layout: React.FC = () => {
     );
   }, [user]);
 
+  function getEquipmentIdFromPathname() {
+    const pathParts = pathname.split('/');
+    if (/equipment-/.test(pathParts[pathParts.length - 1])) {
+      return pathParts[pathParts.length - 1];
+    }
+    return;
+  }
   const { onEvent } = useSocket();
+
+  useEffect(() => {
+    onEvent('equipment-status', (data: any) => {
+      const equipmentId = getEquipmentIdFromPathname();
+      if (!equipmentId) return;
+      if (data?.id === equipmentId && data?.status === 'ACTIVE') {
+        setStatusEquipment('ACTIVE');
+      } else if (data?.id !== equipmentId || data?.status !== 'ACTIVE') {
+        setStatusEquipment('INACTIVE');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const equipmentId = getEquipmentIdFromPathname();
+    if (!equipmentId) return;
+    onEvent(`sensor-data/${equipmentId}`, (data: any) => {
+      const MAX_DATA = 200;
+      const time = dayjs(data.timestamp).format('HH:m:ss');
+      setHeartbeatData((previousState: any) => [
+        ...(previousState.length > MAX_DATA
+          ? previousState.slice(previousState.length - MAX_DATA)
+          : previousState),
+        { heartbeat: data.heartbeat, time },
+      ]);
+      setSPO2Data((previousState: any) => [
+        ...(previousState.length > MAX_DATA
+          ? previousState.slice(previousState.length - MAX_DATA)
+          : previousState),
+        { spo2: data.spo2, time },
+      ]);
+    });
+  }, []);
+
   useEffect(() => {
     onEvent('notification', (data: any) => {
       notification.warning({

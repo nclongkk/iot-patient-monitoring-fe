@@ -3,4 +3,5 @@ export interface IPatient {
   name: string;
   age: number;
   gender: string;
+  hospitalId: string;
 }
