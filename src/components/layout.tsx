@@ -157,6 +157,9 @@ const Layout: React.FC = () => {
       notification.warning({
         message: 'Cảnh báo',
         description: data.message,
+        onClick: () => {
+          navigate(`equipments/${data.equipment?.id}`);
+        },
       });
       setNotifications((prev) => [data, ...prev]);
       setTotalNewNotifications((prev) => prev + 1);
