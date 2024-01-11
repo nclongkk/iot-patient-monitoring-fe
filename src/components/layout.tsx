@@ -31,6 +31,7 @@ import {
   statusEquipmentState,
 } from '../atoms/socketData';
 import dayjs from 'dayjs';
+import notificationSound from '../assets/notification-sound.mp3';
 const { Header, Content, Sider } = AntLayout;
 const { Title } = Typography;
 
@@ -94,6 +95,10 @@ const Layout: React.FC = () => {
       console.error('Error fetching user data:', error);
       throw error;
     }
+  };
+
+  const playSound = () => {
+    new Audio(notificationSound).play();
   };
 
   useEffect(() => {
@@ -161,6 +166,7 @@ const Layout: React.FC = () => {
           navigate(`equipments/${data.equipment?.id}`);
         },
       });
+      playSound();
       setNotifications((prev) => [data, ...prev]);
       setTotalNewNotifications((prev) => prev + 1);
     });
